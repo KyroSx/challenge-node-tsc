@@ -15,12 +15,16 @@ class CreateTransactionService {
   }
 
   public execute({ title, value, type }: Request): Transaction {
-    if (value <= 0) throw Error("Value can't be negative");
+    const allowedTypes = ['income', 'outcome'];
+
+    if (!allowedTypes.includes(type)) throw Error('This type does not exist');
+
+    if (value <= 0) throw Error('Value can not be negative');
 
     if (type === 'outcome') {
       const { total } = this.transactionsRepository.getBalance();
 
-      if (value > total) throw Error('You dont have enough money');
+      if (value > total) throw Error('You do not have enough balance');
     }
 
     const transaction = this.transactionsRepository.create({
